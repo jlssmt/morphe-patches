@@ -1,3 +1,9 @@
+## [2.2.0](https://github.com/jlssmt/morphe-patches/compare/v2.1.1...v2.2.0) (2026-10-31)
+
+### ✨ New Features
+
+* **youtube:** add persistent Shorts payload diagnostics ([bd5e27d](https://github.com/jlssmt/morphe-patches/commit/bd5e27df6683c4b6823cc82854e2af4c4cda5b08))
+
 ## [2.1.1](https://github.com/jlssmt/morphe-patches/compare/v2.1.0...v2.1.1) (2026-10-31)
 
 ### 🐛 Bug Fixes
