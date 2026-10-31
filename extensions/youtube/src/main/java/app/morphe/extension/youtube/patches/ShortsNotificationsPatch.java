@@ -8,11 +8,14 @@
 package app.morphe.extension.youtube.patches;
 
 import android.app.Activity;
+import android.content.Context;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import app.morphe.extension.shared.Logger;
+import app.morphe.extension.shared.Utils;
 import app.morphe.extension.youtube.settings.Settings;
 
 public final class ShortsNotificationsPatch {
@@ -28,32 +31,65 @@ public final class ShortsNotificationsPatch {
     private ShortsNotificationsPatch() {
     }
 
-    public static boolean shouldSuppressShortsNotification(Object pushNotification) {
-        if (!Settings.DISABLE_SHORTS_NOTIFICATIONS.get()) return false;
+    public static boolean shouldSuppressShortsNotification(Context context, Object pushNotification) {
+        if (context != null && !Utils.isContextSet()) {
+            Utils.setContext(context.getApplicationContext());
+        }
+
+        boolean captureEnabled = Settings.CAPTURE_SHORTS_NOTIFICATION_PAYLOADS.get();
+        boolean filterEnabled = Settings.DISABLE_SHORTS_NOTIFICATIONS.get();
+        if (!captureEnabled && !filterEnabled) return false;
 
         boolean isShorts = isShortsNotification(pushNotification);
-        if (isShorts) {
-            int sinceLaunch;
-            int total;
-            synchronized (HIDDEN_COUNT_LOCK) {
-                sinceLaunch = increment(Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.get());
-                total = increment(Math.max(Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.get(), sinceLaunch - 1));
-                Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.save(sinceLaunch);
-                Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.save(total);
-            }
-            int hiddenSinceLaunch = sinceLaunch;
-            int hiddenTotal = total;
-            Logger.printDebug(() -> "Shorts notification filter: ReelWatchEndpoint=true, decision=suppressed, since launch="
-                    + hiddenSinceLaunch + ", total=" + hiddenTotal);
-        } else {
-            Logger.printDebug(() -> {
-                String message = "Shorts notification filter: ReelWatchEndpoint=false, decision=passed";
-                return isPushNotificationRenderer(pushNotification)
-                        ? message + ", decoded push payload=" + debugPayload(pushNotification)
-                        : message;
-            });
+        if (captureEnabled) {
+            captureNotificationPayload(context, pushNotification, filterEnabled, isShorts);
         }
-        return isShorts;
+        if (!filterEnabled || !isShorts) {
+            if (filterEnabled) {
+                Logger.printDebug(() -> "Shorts notification filter: ReelWatchEndpoint=false, decision=passed");
+            }
+            return false;
+        }
+
+        int sinceLaunch;
+        int total;
+        synchronized (HIDDEN_COUNT_LOCK) {
+            sinceLaunch = increment(Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.get());
+            total = increment(Math.max(Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.get(), sinceLaunch - 1));
+            Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.save(sinceLaunch);
+            Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.save(total);
+        }
+        int hiddenSinceLaunch = sinceLaunch;
+        int hiddenTotal = total;
+        Logger.printDebug(() -> "Shorts notification filter: ReelWatchEndpoint=true, decision=suppressed, since launch="
+                + hiddenSinceLaunch + ", total=" + hiddenTotal);
+        return true;
+    }
+
+    public static String readCapturedPayloads(Context context) throws IOException {
+        return ShortsNotificationPayloadCapture.read(context.getFilesDir());
+    }
+
+    public static void clearCapturedPayloads(Context context) throws IOException {
+        ShortsNotificationPayloadCapture.clear(context.getFilesDir());
+    }
+
+    private static void captureNotificationPayload(Context context, Object pushNotification,
+                                                   boolean filterEnabled, boolean isShorts) {
+        if (context == null) return;
+
+        String type = pushNotification == null ? "null" : pushNotification.getClass().getName();
+        String decision = filterEnabled && isShorts ? "suppressed" : "passed";
+        String entry = "timestamp_ms=" + System.currentTimeMillis() + " type=" + type
+                + " filter_enabled=" + filterEnabled
+                + " classified_shorts=" + isShorts
+                + " decision=" + decision + System.lineSeparator()
+                + debugPayload(pushNotification);
+        try {
+            ShortsNotificationPayloadCapture.append(context.getFilesDir(), entry);
+        } catch (IOException | RuntimeException ex) {
+            Logger.printException(() -> "Could not persist push notification payload", ex);
+        }
     }
 
     public static void showHiddenShortsCountOnLaunch(Activity activity) {
@@ -81,15 +117,6 @@ public final class ShortsNotificationsPatch {
 
     private static int increment(int value) {
         return value < Integer.MAX_VALUE ? value + 1 : value;
-    }
-
-    private static boolean isPushNotificationRenderer(Object pushNotification) {
-        if (pushNotification == null) return false;
-        try {
-            return pushNotification.getClass().getField("b").getInt(pushNotification) == PUSH_NOTIFICATION_RENDERER;
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
-            return false;
-        }
     }
 
     private static String debugPayload(Object pushNotification) {

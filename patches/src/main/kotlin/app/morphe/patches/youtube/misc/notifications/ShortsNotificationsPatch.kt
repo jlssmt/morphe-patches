@@ -35,7 +35,7 @@ private val shortsNotificationsCompatibility = Compatibility(
     apkFileType = ApkFileType.APK_REQUIRED,
     appIconColor = 0xFF0033,
     signatures = COMPATIBILITY_YOUTUBE.signatures,
-    targets = COMPATIBILITY_YOUTUBE.targets.filter { it.version in setOf("21.43.523", "21.30.216") },
+    targets = COMPATIBILITY_YOUTUBE.targets.filter { it.version in setOf("21.43.523", "21.42.241", "21.30.216") },
 )
 
 internal object FcmMessageListenerFingerprint : Fingerprint(
@@ -95,7 +95,7 @@ val shortsNotificationsPatch = bytecodePatch(
         notificationHandler.addInstructionsWithLabels(
             0,
             """
-                invoke-static { p2 }, $EXTENSION_CLASS->shouldSuppressShortsNotification(Ljava/lang/Object;)Z
+                invoke-static { p1, p2 }, $EXTENSION_CLASS->shouldSuppressShortsNotification(Landroid/content/Context;Ljava/lang/Object;)Z
                 move-result v$register
                 if-eqz v$register, :morphe_shorts_notifications_continue
                 return-void
