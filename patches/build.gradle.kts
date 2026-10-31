@@ -132,6 +132,18 @@ tasks {
             setArgs(listOfNotNull(apk, mode, output))
         }
     }
+    register<JavaExec>("validateShortsNotifications") {
+        description = "Applies the Shorts notification filter to a stock YouTube APK and verifies patched DEX"
+        group = "verification"
+        dependsOn("testClasses")
+        classpath = sourceSets["test"].runtimeClasspath
+        mainClass.set("app.morphe.patches.youtube.misc.notifications.ShortsNotificationsApkBuildKt")
+        doFirst {
+            val apk = providers.gradleProperty("shortsNotificationsApk").orNull
+                ?: throw GradleException("validateShortsNotifications requires -PshortsNotificationsApk=/path/youtube.apk")
+            setArgs(listOf(apk))
+        }
+    }
     // Used by gradle-semantic-release-plugin.
     publish {
         dependsOn("generatePatchesList")

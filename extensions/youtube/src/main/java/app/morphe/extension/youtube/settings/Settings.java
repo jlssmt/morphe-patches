@@ -620,6 +620,9 @@ public class Settings extends SharedYouTubeSettings {
 
     // Shorts
     public static final BooleanSetting DISABLE_SHORTS_RESUMING_ON_STARTUP = new BooleanSetting("morphe_disable_shorts_resuming_on_startup", FALSE);
+    public static final BooleanSetting DISABLE_SHORTS_NOTIFICATIONS = new BooleanSetting("morphe_disable_shorts_notifications", FALSE);
+    public static final IntegerSetting SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH = new IntegerSetting("morphe_shorts_notifications_hidden_count", 0, false, false);
+    public static final IntegerSetting SHORTS_NOTIFICATIONS_HIDDEN_TOTAL = new IntegerSetting("morphe_shorts_notifications_hidden_total", 0, false, false);
     public static final BooleanSetting DISABLE_SHORTS_BACKGROUND_PLAYBACK = new BooleanSetting("morphe_shorts_disable_background_playback", FALSE, true);
     public static final EnumSetting<ShortsPlayerType> SHORTS_PLAYER_TYPE = new EnumSetting<>("morphe_shorts_player_type", ShortsPlayerType.SHORTS_PLAYER);
     public static final EnumSetting<PlayerIcons.Style> SHORTS_ICON_STYLE = new EnumSetting<>("morphe_shorts_icon_style", PlayerIcons.Style.AUTO, true);
