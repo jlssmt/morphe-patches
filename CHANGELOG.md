@@ -1,3 +1,9 @@
+## [2.1.0](https://github.com/jlssmt/morphe-patches/compare/v2.0.0...v2.1.0) (2026-10-31)
+
+### ✨ New Features
+
+* **youtube:** add Shorts notification filtering ([3be6e72](https://github.com/jlssmt/morphe-patches/commit/3be6e72d40479692e6f43b98487e69a7f0d50afd))
+
 ## [2.0.0](https://github.com/MorpheApp/morphe-patches/compare/v1.48.0...v2.0.0) (2026-10-30)
 
 ### ⚠ BREAKING CHANGES

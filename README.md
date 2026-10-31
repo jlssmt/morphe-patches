@@ -35,9 +35,9 @@ All modifications made by Morphe, along with their dates, can be found in the Gi
 ## 🩹 Patches list
 
 <!-- PATCHES_START -->
-> **[v2.0.0](https://github.com/MorpheApp/morphe-patches/releases/tag/v2.0.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;194 patches total
+> **[v2.1.0](https://github.com/jlssmt/morphe-patches/releases/tag/v2.1.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;195 patches total
 <details>
-<summary>📦 YouTube&nbsp;&nbsp;•&nbsp;&nbsp;109 patches</summary>
+<summary>📦 YouTube&nbsp;&nbsp;•&nbsp;&nbsp;110 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -69,6 +69,7 @@ All modifications made by Morphe, along with their dates, can be found in the Gi
 | [DeArrow](#dearrow) | Adds options to replace video thumbnails and titles using the DeArrow API, or replace video thumbnails with image captures from the video. |  |
 | [Disable DRC audio](#disable-drc-audio) | Adds an option to disable DRC (Dynamic Range Compression) audio. |  |
 | [Disable QUIC protocol](#disable-quic-protocol) | Adds an option to disable QUIC (Quick UDP Internet Connections) network protocol. |  |
+| [Disable Shorts notifications](#disable-shorts-notifications) | Adds an option to filter Shorts from YouTube push notifications. |  |
 | [Disable Shorts resuming on startup](#disable-shorts-resuming-on-startup) | Adds an option to disable Shorts from resuming on app startup when Shorts were last being watched. |  |
 | [Disable auto feed refresh](#disable-auto-feed-refresh) | Adds an option to stop feeds from refreshing automatically after they become outdated. |  |
 | [Disable continue watching prompt](#disable-continue-watching-prompt) | Adds an option to keep autoplay going instead of pausing with a "Continue watching" prompt after a period of inactivity. |  |
