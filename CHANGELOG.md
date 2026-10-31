@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/jlssmt/morphe-patches/compare/v2.1.0...v2.1.1) (2026-10-31)
+
+### 🐛 Bug Fixes
+
+* **release:** sign fork patch bundles ([77a7343](https://github.com/jlssmt/morphe-patches/commit/77a7343e5010ae036fdd768d5c402e177bca918a))
+
 ## [2.1.0](https://github.com/jlssmt/morphe-patches/compare/v2.0.0...v2.1.0) (2026-10-31)
 
 ### ✨ New Features
