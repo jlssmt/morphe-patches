@@ -1,3 +1,9 @@
+## [2.2.2](https://github.com/jlssmt/morphe-patches/compare/v2.2.1...v2.2.2) (2026-11-01)
+
+### 🐛 Bug Fixes
+
+* **youtube:** dump opaque identity payload strings ([52e0e2e](https://github.com/jlssmt/morphe-patches/commit/52e0e2e333f44f8fdf57ab32de9ca6c7e66163bd))
+
 ## [2.2.1](https://github.com/jlssmt/morphe-patches/compare/v2.2.0...v2.2.1) (2026-11-01)
 
 ### 🐛 Bug Fixes

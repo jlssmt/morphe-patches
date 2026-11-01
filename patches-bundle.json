@@ -1,8 +1,8 @@
 {
-  "created_at": "2026-11-01T10:10:08",
-  "description": "## [2.2.1](https://github.com/jlssmt/morphe-patches/compare/v2.2.0...v2.2.1) (2026-11-01)\n\n### 🐛 Bug Fixes\n\n* **youtube:** dump fields for opaque Shorts payloads ([b3d592f](https://github.com/jlssmt/morphe-patches/commit/b3d592f13862bb0b7c5da65242f8b6e6a514d228))",
-  "download_url": "https://github.com/jlssmt/morphe-patches/releases/download/v2.2.1/patches-2.2.1.mpp",
+  "created_at": "2026-11-01T16:48:44",
+  "description": "## [2.2.2](https://github.com/jlssmt/morphe-patches/compare/v2.2.1...v2.2.2) (2026-11-01)\n\n### 🐛 Bug Fixes\n\n* **youtube:** dump opaque identity payload strings ([52e0e2e](https://github.com/jlssmt/morphe-patches/commit/52e0e2e333f44f8fdf57ab32de9ca6c7e66163bd))",
+  "download_url": "https://github.com/jlssmt/morphe-patches/releases/download/v2.2.2/patches-2.2.2.mpp",
   "signature_download_url": "",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "public_key": "GIis3iEWHfooK4EsHyAS9WIa2+3eczcunuK6rjTPHUk="
 }
