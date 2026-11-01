@@ -12,7 +12,9 @@ import android.content.Context;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import app.morphe.extension.shared.Logger;
 import app.morphe.extension.shared.Utils;
@@ -22,6 +24,7 @@ public final class ShortsNotificationsPatch {
     // shortcut: assumes stable push proto fields and endpoint extension names, update if YouTube changes the schema.
     private static final int PUSH_NOTIFICATION_RENDERER = 77819057;
     private static final int MAX_DEBUG_PAYLOAD_LENGTH = 8000;
+    private static final int MAX_DEBUG_PAYLOAD_DEPTH = 3;
     private static final String[] REEL_WATCH_ENDPOINT_EXTENSIONS = {
             "defpackage.blie", // YouTube 21.42+
             "defpackage.bjts"  // YouTube 21.30
@@ -119,16 +122,62 @@ public final class ShortsNotificationsPatch {
         return value < Integer.MAX_VALUE ? value + 1 : value;
     }
 
-    private static String debugPayload(Object pushNotification) {
+    static String debugPayload(Object pushNotification) {
         final String payload;
         try {
-            payload = String.valueOf(pushNotification);
+            payload = pushNotification != null && hasDefaultToString(pushNotification.getClass())
+                    ? dumpFields(pushNotification, 0)
+                    : String.valueOf(pushNotification);
         } catch (RuntimeException ex) {
             return "<could not render decoded payload: " + ex.getClass().getSimpleName() + ">";
         }
         return payload.length() <= MAX_DEBUG_PAYLOAD_LENGTH
                 ? payload
                 : payload.substring(0, MAX_DEBUG_PAYLOAD_LENGTH) + "… [truncated]";
+    }
+
+    private static boolean hasDefaultToString(Class<?> type) {
+        try {
+            return type.getMethod("toString").getDeclaringClass() == Object.class;
+        } catch (NoSuchMethodException ignored) {
+            return true;
+        }
+    }
+
+    private static String dumpFields(Object value, int depth) {
+        // ponytail: cap reflection at three levels; deepen only if a captured schema requires it.
+        Class<?> type = value.getClass();
+        if (depth >= MAX_DEBUG_PAYLOAD_DEPTH) return "<" + type.getName() + ">";
+        if (type.isArray()) return type.getName() + "[length=" + java.lang.reflect.Array.getLength(value) + "]";
+
+        StringBuilder dump = new StringBuilder(type.getName()).append('{');
+        boolean first = true;
+        for (Class<?> current = type; current != null && current != Object.class; current = current.getSuperclass()) {
+            for (Field field : current.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic()) continue;
+                if (!first) dump.append(", ");
+                dump.append(field.getName()).append('=');
+                try {
+                    field.setAccessible(true);
+                    Object fieldValue = field.get(value);
+                    if (fieldValue == null) {
+                        dump.append("null");
+                    } else if (hasDefaultToString(fieldValue.getClass())) {
+                        dump.append(dumpFields(fieldValue, depth + 1));
+                    } else {
+                        dump.append(fieldValue);
+                    }
+                } catch (ReflectiveOperationException | RuntimeException ex) {
+                    dump.append("<inaccessible: ").append(ex.getClass().getSimpleName()).append('>');
+                }
+                if (dump.length() >= MAX_DEBUG_PAYLOAD_LENGTH) {
+                    dump.setLength(MAX_DEBUG_PAYLOAD_LENGTH);
+                    return dump.append("… [truncated]").toString();
+                }
+                first = false;
+            }
+        }
+        return dump.append('}').toString();
     }
 
     static boolean isShortsNotification(Object pushNotification) {

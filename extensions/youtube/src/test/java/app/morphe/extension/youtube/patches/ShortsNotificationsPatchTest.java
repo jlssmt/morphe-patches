@@ -26,6 +26,14 @@ public class ShortsNotificationsPatchTest {
     }
 
     @Test
+    public void dumpsPrivateNestedFieldsWhenPayloadUsesObjectToString() {
+        String payload = ShortsNotificationsPatch.debugPayload(new PlainPayload());
+
+        assertTrue(payload.contains("b=77819057"));
+        assertTrue(payload.contains("title=Shorts"));
+    }
+
+    @Test
     public void doesNotFilterRegularUploadsOrOtherPushTypes() {
         FakePush regularVideo = new FakePush();
         regularVideo.c = new FakeRenderer(new FakeEndpoint(new Object()));
@@ -68,5 +76,14 @@ public class ShortsNotificationsPatchTest {
         public boolean n(Object descriptor) {
             return this.descriptor == descriptor;
         }
+    }
+
+    private static final class PlainPayload {
+        private final int b = 77819057;
+        private final NestedPayload c = new NestedPayload();
+    }
+
+    private static final class NestedPayload {
+        private final String title = "Shorts";
     }
 }
