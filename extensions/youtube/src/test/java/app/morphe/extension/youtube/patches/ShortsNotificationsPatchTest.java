@@ -26,7 +26,7 @@ public class ShortsNotificationsPatchTest {
     }
 
     @Test
-    public void dumpsPrivateNestedFieldsWhenPayloadUsesObjectToString() {
+    public void dumpsPrivateNestedFieldsWhenToStringIsAnOpaqueIdentity() {
         String payload = ShortsNotificationsPatch.debugPayload(new PlainPayload());
 
         assertTrue(payload.contains("b=77819057"));
@@ -81,6 +81,11 @@ public class ShortsNotificationsPatchTest {
     private static final class PlainPayload {
         private final int b = 77819057;
         private final NestedPayload c = new NestedPayload();
+
+        @Override
+        public String toString() {
+            return "# PlainPayload@e3645603";
+        }
     }
 
     private static final class NestedPayload {

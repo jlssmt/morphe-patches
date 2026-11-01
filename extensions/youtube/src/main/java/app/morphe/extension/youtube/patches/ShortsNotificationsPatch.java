@@ -125,9 +125,11 @@ public final class ShortsNotificationsPatch {
     static String debugPayload(Object pushNotification) {
         final String payload;
         try {
-            payload = pushNotification != null && hasDefaultToString(pushNotification.getClass())
+            String rendered = String.valueOf(pushNotification);
+            payload = pushNotification != null
+                    && (hasDefaultToString(pushNotification.getClass()) || isOpaqueIdentityString(pushNotification, rendered))
                     ? dumpFields(pushNotification, 0)
-                    : String.valueOf(pushNotification);
+                    : rendered;
         } catch (RuntimeException ex) {
             return "<could not render decoded payload: " + ex.getClass().getSimpleName() + ">";
         }
@@ -142,6 +144,12 @@ public final class ShortsNotificationsPatch {
         } catch (NoSuchMethodException ignored) {
             return true;
         }
+    }
+
+    // ponytail: recognize class@hash markers; broaden only if another opaque format appears.
+    private static boolean isOpaqueIdentityString(Object value, String rendered) {
+        String prefix = value.getClass().getSimpleName() + "@";
+        return rendered.startsWith(prefix) || rendered.startsWith("# " + prefix);
     }
 
     private static String dumpFields(Object value, int depth) {
