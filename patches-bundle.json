@@ -1,8 +1,8 @@
 {
-  "created_at": "2026-10-31T21:39:37",
-  "description": "## [2.2.0](https://github.com/jlssmt/morphe-patches/compare/v2.1.1...v2.2.0) (2026-10-31)\n\n### ✨ New Features\n\n* **youtube:** add persistent Shorts payload diagnostics ([bd5e27d](https://github.com/jlssmt/morphe-patches/commit/bd5e27df6683c4b6823cc82854e2af4c4cda5b08))",
-  "download_url": "https://github.com/jlssmt/morphe-patches/releases/download/v2.2.0/patches-2.2.0.mpp",
+  "created_at": "2026-11-01T10:10:08",
+  "description": "## [2.2.1](https://github.com/jlssmt/morphe-patches/compare/v2.2.0...v2.2.1) (2026-11-01)\n\n### 🐛 Bug Fixes\n\n* **youtube:** dump fields for opaque Shorts payloads ([b3d592f](https://github.com/jlssmt/morphe-patches/commit/b3d592f13862bb0b7c5da65242f8b6e6a514d228))",
+  "download_url": "https://github.com/jlssmt/morphe-patches/releases/download/v2.2.1/patches-2.2.1.mpp",
   "signature_download_url": "",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "public_key": "GIis3iEWHfooK4EsHyAS9WIa2+3eczcunuK6rjTPHUk="
 }
