@@ -34,6 +34,13 @@ public class ShortsNotificationsPatchTest {
     }
 
     @Test
+    public void dumpsNestedFieldsWhenCustomToStringHidesThem() {
+        String payload = ShortsNotificationsPatch.debugPayload(new StructuredPayload());
+
+        assertTrue(payload.contains("f=91"));
+    }
+
+    @Test
     public void doesNotFilterRegularUploadsOrOtherPushTypes() {
         FakePush regularVideo = new FakePush();
         regularVideo.c = new FakeRenderer(new FakeEndpoint(new Object()));
@@ -76,6 +83,20 @@ public class ShortsNotificationsPatchTest {
         public boolean n(Object descriptor) {
             return this.descriptor == descriptor;
         }
+    }
+
+    private static final class StructuredPayload {
+        private final int b = 77819057;
+        private final OpaqueNestedPayload c = new OpaqueNestedPayload();
+
+        @Override
+        public String toString() {
+            return "bjox{b=77819057, c=# bbfu@99d7722e}";
+        }
+    }
+
+    private static final class OpaqueNestedPayload {
+        private final int f = 91;
     }
 
     private static final class PlainPayload {
