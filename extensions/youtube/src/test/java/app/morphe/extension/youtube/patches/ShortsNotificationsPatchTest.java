@@ -41,6 +41,13 @@ public class ShortsNotificationsPatchTest {
     }
 
     @Test
+    public void includesCompleteSerializedProtoBytes() {
+        String payload = ShortsNotificationsPatch.debugPayload(new SerializedPayload());
+
+        assertTrue(payload.contains("protobuf_base64=CAEQAg=="));
+    }
+
+    @Test
     public void doesNotFilterRegularUploadsOrOtherPushTypes() {
         FakePush regularVideo = new FakePush();
         regularVideo.c = new FakeRenderer(new FakeEndpoint(new Object()));
@@ -82,6 +89,12 @@ public class ShortsNotificationsPatchTest {
 
         public boolean n(Object descriptor) {
             return this.descriptor == descriptor;
+        }
+    }
+
+    public static final class SerializedPayload {
+        public byte[] toByteArray() {
+            return new byte[]{0x08, 0x01, 0x10, 0x02};
         }
     }
 
