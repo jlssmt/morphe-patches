@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Base64;
 
 import app.morphe.extension.shared.Logger;
 import app.morphe.extension.shared.Utils;
@@ -23,7 +24,7 @@ import app.morphe.extension.youtube.settings.Settings;
 public final class ShortsNotificationsPatch {
     // shortcut: assumes stable push proto fields and endpoint extension names, update if YouTube changes the schema.
     private static final int PUSH_NOTIFICATION_RENDERER = 77819057;
-    private static final int MAX_DEBUG_PAYLOAD_LENGTH = 8000;
+    private static final int MAX_DEBUG_PAYLOAD_LENGTH = 900_000;
     private static final int MAX_DEBUG_PAYLOAD_DEPTH = 3;
     private static final String[] REEL_WATCH_ENDPOINT_EXTENSIONS = {
             "defpackage.blie", // YouTube 21.42+
@@ -125,13 +126,29 @@ public final class ShortsNotificationsPatch {
     static String debugPayload(Object pushNotification) {
         final String payload;
         try {
-            payload = pushNotification == null ? "null" : dumpFields(pushNotification, 0);
+            String serialized = serializedPayload(pushNotification);
+            payload = serialized == null
+                    ? (pushNotification == null ? "null" : dumpFields(pushNotification, 0))
+                    : "protobuf_base64=" + serialized;
         } catch (RuntimeException ex) {
             return "<could not render decoded payload: " + ex.getClass().getSimpleName() + ">";
         }
         return payload.length() <= MAX_DEBUG_PAYLOAD_LENGTH
                 ? payload
                 : payload.substring(0, MAX_DEBUG_PAYLOAD_LENGTH) + "… [truncated]";
+    }
+
+    private static String serializedPayload(Object value) {
+        if (value == null) return null;
+        try {
+            Method method = value.getClass().getMethod("toByteArray");
+            if (method.getReturnType() != byte[].class) return null;
+            return Base64.getEncoder().encodeToString((byte[]) method.invoke(value));
+        } catch (NoSuchMethodException ignored) {
+            return null;
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return null;
+        }
     }
 
     private static boolean hasDefaultToString(Class<?> type) {
