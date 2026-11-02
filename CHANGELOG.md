@@ -1,3 +1,9 @@
+## [2.2.4](https://github.com/jlssmt/morphe-patches/compare/v2.2.3...v2.2.4) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **youtube:** dump fields from opaque Shorts payloads ([20f2697](https://github.com/jlssmt/morphe-patches/commit/20f2697dec757fa0efe8fbce7b15d4f651d57aa5))
+
 ## [2.2.3](https://github.com/jlssmt/morphe-patches/compare/v2.2.2...v2.2.3) (2026-11-02)
 
 ### 🐛 Bug Fixes

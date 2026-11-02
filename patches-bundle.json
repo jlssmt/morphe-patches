@@ -1,8 +1,8 @@
 {
-  "created_at": "2026-11-02T10:03:47",
-  "description": "## [2.2.3](https://github.com/jlssmt/morphe-patches/compare/v2.2.2...v2.2.3) (2026-11-02)\n\n### 🐛 Bug Fixes\n\n* **release:** preserve bundle if release fails ([f70599c](https://github.com/jlssmt/morphe-patches/commit/f70599c65ee9d70577ba26748ff07549f90cebdc))",
-  "download_url": "https://github.com/jlssmt/morphe-patches/releases/download/v2.2.3/patches-2.2.3.mpp",
+  "created_at": "2026-11-02T11:33:21",
+  "description": "## [2.2.4](https://github.com/jlssmt/morphe-patches/compare/v2.2.3...v2.2.4) (2026-11-02)\n\n### 🐛 Bug Fixes\n\n* **youtube:** dump fields from opaque Shorts payloads ([20f2697](https://github.com/jlssmt/morphe-patches/commit/20f2697dec757fa0efe8fbce7b15d4f651d57aa5))",
+  "download_url": "https://github.com/jlssmt/morphe-patches/releases/download/v2.2.4/patches-2.2.4.mpp",
   "signature_download_url": "",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "public_key": "GIis3iEWHfooK4EsHyAS9WIa2+3eczcunuK6rjTPHUk="
 }
