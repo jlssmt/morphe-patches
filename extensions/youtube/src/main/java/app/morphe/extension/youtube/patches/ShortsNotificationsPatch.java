@@ -125,11 +125,7 @@ public final class ShortsNotificationsPatch {
     static String debugPayload(Object pushNotification) {
         final String payload;
         try {
-            String rendered = String.valueOf(pushNotification);
-            payload = pushNotification != null
-                    && (hasDefaultToString(pushNotification.getClass()) || isOpaqueIdentityString(pushNotification, rendered))
-                    ? dumpFields(pushNotification, 0)
-                    : rendered;
+            payload = pushNotification == null ? "null" : dumpFields(pushNotification, 0);
         } catch (RuntimeException ex) {
             return "<could not render decoded payload: " + ex.getClass().getSimpleName() + ">";
         }
@@ -170,7 +166,8 @@ public final class ShortsNotificationsPatch {
                     Object fieldValue = field.get(value);
                     if (fieldValue == null) {
                         dump.append("null");
-                    } else if (hasDefaultToString(fieldValue.getClass())) {
+                    } else if (hasDefaultToString(fieldValue.getClass())
+                            || isOpaqueIdentityString(fieldValue, String.valueOf(fieldValue))) {
                         dump.append(dumpFields(fieldValue, depth + 1));
                     } else {
                         dump.append(fieldValue);
