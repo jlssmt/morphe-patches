@@ -1,3 +1,9 @@
+## [2.2.5](https://github.com/jlssmt/morphe-patches/compare/v2.2.4...v2.2.5) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **youtube:** capture full serialized push payloads ([2fe3fe9](https://github.com/jlssmt/morphe-patches/commit/2fe3fe9be50236e60e39916dd687b81ad12154a4))
+
 ## [2.2.4](https://github.com/jlssmt/morphe-patches/compare/v2.2.3...v2.2.4) (2026-11-02)
 
 ### 🐛 Bug Fixes
