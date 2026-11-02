@@ -52,6 +52,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MORPHE_SIGNING_KEY: ${{ secrets.MORPHE_SIGNING_KEY }}
 
+      - name: Preserve built bundle when release fails
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: failed-release-bundle
+          archive: false
+          if-no-files-found: warn
+          path: patches/build/libs/patches-*.mpp
+
       - name: Attest
         if: steps.release.outputs.new_release_published == 'true'
         uses: actions/attest-build-provenance@v3
