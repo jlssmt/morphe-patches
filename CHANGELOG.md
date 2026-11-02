@@ -1,3 +1,9 @@
+## [2.2.3](https://github.com/jlssmt/morphe-patches/compare/v2.2.2...v2.2.3) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **release:** preserve bundle if release fails ([f70599c](https://github.com/jlssmt/morphe-patches/commit/f70599c65ee9d70577ba26748ff07549f90cebdc))
+
 ## [2.2.2](https://github.com/jlssmt/morphe-patches/compare/v2.2.1...v2.2.2) (2026-11-01)
 
 ### 🐛 Bug Fixes
