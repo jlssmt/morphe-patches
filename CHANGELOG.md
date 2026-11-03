@@ -1,3 +1,9 @@
+## [2.2.7](https://github.com/jlssmt/morphe-patches/compare/v2.2.6...v2.2.7) (2026-11-03)
+
+### 🐛 Bug Fixes
+
+* **metadata:** set bundle name to jlssmt ([e5075d3](https://github.com/jlssmt/morphe-patches/commit/e5075d335f7302d07ce85683aaa809d33b733ec4))
+
 ## [2.2.6](https://github.com/jlssmt/morphe-patches/compare/v2.2.5...v2.2.6) (2026-11-03)
 
 ### 🐛 Bug Fixes
