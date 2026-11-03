@@ -1,3 +1,9 @@
+## [2.2.6](https://github.com/jlssmt/morphe-patches/compare/v2.2.5...v2.2.6) (2026-11-03)
+
+### 🐛 Bug Fixes
+
+* **youtube:** detect reel endpoints in serialized pushes ([e3713d5](https://github.com/jlssmt/morphe-patches/commit/e3713d5b980a58405a8c8794aded2d27a75fe949))
+
 ## [2.2.5](https://github.com/jlssmt/morphe-patches/compare/v2.2.4...v2.2.5) (2026-11-02)
 
 ### 🐛 Bug Fixes
