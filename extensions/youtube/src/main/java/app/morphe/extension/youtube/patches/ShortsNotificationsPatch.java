@@ -16,14 +16,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Base64;
+import java.util.List;
 
 import app.morphe.extension.shared.Logger;
 import app.morphe.extension.shared.Utils;
+import app.morphe.extension.youtube.patches.utils.ProtoNode;
 import app.morphe.extension.youtube.settings.Settings;
 
 public final class ShortsNotificationsPatch {
     // shortcut: assumes stable push proto fields and endpoint extension names, update if YouTube changes the schema.
     private static final int PUSH_NOTIFICATION_RENDERER = 77819057;
+    private static final int REEL_WATCH_ENDPOINT_FIELD = 139608561;
     private static final int MAX_DEBUG_PAYLOAD_LENGTH = 900_000;
     private static final int MAX_DEBUG_PAYLOAD_DEPTH = 3;
     private static final String[] REEL_WATCH_ENDPOINT_EXTENSIONS = {
@@ -126,10 +129,10 @@ public final class ShortsNotificationsPatch {
     static String debugPayload(Object pushNotification) {
         final String payload;
         try {
-            String serialized = serializedPayload(pushNotification);
+            byte[] serialized = serializedPayload(pushNotification);
             payload = serialized == null
                     ? (pushNotification == null ? "null" : dumpFields(pushNotification, 0))
-                    : "protobuf_base64=" + serialized;
+                    : "protobuf_base64=" + Base64.getEncoder().encodeToString(serialized);
         } catch (RuntimeException ex) {
             return "<could not render decoded payload: " + ex.getClass().getSimpleName() + ">";
         }
@@ -138,17 +141,29 @@ public final class ShortsNotificationsPatch {
                 : payload.substring(0, MAX_DEBUG_PAYLOAD_LENGTH) + "… [truncated]";
     }
 
-    private static String serializedPayload(Object value) {
+    private static byte[] serializedPayload(Object value) {
         if (value == null) return null;
         try {
             Method method = value.getClass().getMethod("toByteArray");
-            if (method.getReturnType() != byte[].class) return null;
-            return Base64.getEncoder().encodeToString((byte[]) method.invoke(value));
+            return method.getReturnType() == byte[].class ? (byte[]) method.invoke(value) : null;
         } catch (NoSuchMethodException ignored) {
             return null;
         } catch (ReflectiveOperationException | RuntimeException ignored) {
             return null;
         }
+    }
+
+    private static boolean containsReelWatchEndpoint(byte[] serialized) {
+        return serialized != null && containsReelWatchEndpoint(ProtoNode.parse(serialized));
+    }
+
+    private static boolean containsReelWatchEndpoint(List<ProtoNode> fields) {
+        if (fields == null) return false;
+        for (ProtoNode field : fields) {
+            if (field.getFieldNumber() == REEL_WATCH_ENDPOINT_FIELD && field.children != null) return true;
+            if (containsReelWatchEndpoint(field.children)) return true;
+        }
+        return false;
     }
 
     private static boolean hasDefaultToString(Class<?> type) {
@@ -208,6 +223,7 @@ public final class ShortsNotificationsPatch {
         try {
             Class<?> pushClass = pushNotification.getClass();
             if (pushClass.getField("b").getInt(pushNotification) != PUSH_NOTIFICATION_RENDERER) return false;
+            if (containsReelWatchEndpoint(serializedPayload(pushNotification))) return true;
 
             Object renderer = pushClass.getField("c").get(pushNotification);
             if (renderer == null) return false;

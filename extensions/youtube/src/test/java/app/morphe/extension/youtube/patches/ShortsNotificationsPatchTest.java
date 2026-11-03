@@ -3,6 +3,12 @@ package app.morphe.extension.youtube.patches;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import com.google.protobuf.CodedOutputStream;
+
 import org.junit.Test;
 
 import defpackage.blie;
@@ -21,6 +27,16 @@ public class ShortsNotificationsPatchTest {
     public void identifiesLegacyReelWatchEndpoints() {
         FakePush push = new FakePush();
         push.c = new FakeRenderer(new FakeEndpoint(bjts.b.d));
+
+        assertTrue(ShortsNotificationsPatch.isShortsNotification(push));
+    }
+
+    @Test
+    public void detectsReelWatchEndpointInSerializedPushProto() throws IOException {
+        byte[] endpoint = fieldBytes(50, "reel".getBytes(StandardCharsets.UTF_8));
+        byte[] navigation = fieldBytes(139608561, endpoint);
+        byte[] renderer = fieldBytes(2, navigation);
+        SerializedShortPush push = new SerializedShortPush(fieldBytes(77819057, renderer));
 
         assertTrue(ShortsNotificationsPatch.isShortsNotification(push));
     }
@@ -89,6 +105,27 @@ public class ShortsNotificationsPatchTest {
 
         public boolean n(Object descriptor) {
             return this.descriptor == descriptor;
+        }
+    }
+
+    private static byte[] fieldBytes(int fieldNumber, byte[] value) throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        CodedOutputStream output = CodedOutputStream.newInstance(bytes);
+        output.writeByteArray(fieldNumber, value);
+        output.flush();
+        return bytes.toByteArray();
+    }
+
+    public static final class SerializedShortPush {
+        public int b = 77819057;
+        private final byte[] serialized;
+
+        SerializedShortPush(byte[] serialized) {
+            this.serialized = serialized;
+        }
+
+        public byte[] toByteArray() {
+            return serialized;
         }
     }
 
