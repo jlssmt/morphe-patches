@@ -18,21 +18,19 @@ import java.lang.reflect.Modifier;
 import java.util.Base64;
 import java.util.List;
 
+import com.google.protobuf.MessageLite;
+
 import app.morphe.extension.shared.Logger;
 import app.morphe.extension.shared.Utils;
 import app.morphe.extension.youtube.patches.utils.ProtoNode;
 import app.morphe.extension.youtube.settings.Settings;
 
 public final class ShortsNotificationsPatch {
-    // shortcut: assumes stable push proto fields and endpoint extension names, update if YouTube changes the schema.
-    private static final int PUSH_NOTIFICATION_RENDERER = 77819057;
+    // Wire field numbers from captured protobufs; independent of obfuscated Java names.
+    private static final int PUSH_NOTIFICATION_RENDERER_FIELD = 77819057;
     private static final int REEL_WATCH_ENDPOINT_FIELD = 139608561;
     private static final int MAX_DEBUG_PAYLOAD_LENGTH = 900_000;
     private static final int MAX_DEBUG_PAYLOAD_DEPTH = 3;
-    private static final String[] REEL_WATCH_ENDPOINT_EXTENSIONS = {
-            "defpackage.blie", // YouTube 21.42+
-            "defpackage.bjts"  // YouTube 21.30
-    };
     private static final Object HIDDEN_COUNT_LOCK = new Object();
 
     private ShortsNotificationsPatch() {
@@ -153,19 +151,6 @@ public final class ShortsNotificationsPatch {
         }
     }
 
-    private static boolean containsReelWatchEndpoint(byte[] serialized) {
-        return serialized != null && containsReelWatchEndpoint(ProtoNode.parse(serialized));
-    }
-
-    private static boolean containsReelWatchEndpoint(List<ProtoNode> fields) {
-        if (fields == null) return false;
-        for (ProtoNode field : fields) {
-            if (field.getFieldNumber() == REEL_WATCH_ENDPOINT_FIELD && field.children != null) return true;
-            if (containsReelWatchEndpoint(field.children)) return true;
-        }
-        return false;
-    }
-
     private static boolean hasDefaultToString(Class<?> type) {
         try {
             return type.getMethod("toString").getDeclaringClass() == Object.class;
@@ -218,41 +203,31 @@ public final class ShortsNotificationsPatch {
     }
 
     static boolean isShortsNotification(Object pushNotification) {
-        if (pushNotification == null) return false;
-
+        if (!(pushNotification instanceof MessageLite)) return false;
         try {
-            Class<?> pushClass = pushNotification.getClass();
-            if (pushClass.getField("b").getInt(pushNotification) != PUSH_NOTIFICATION_RENDERER) return false;
-            if (containsReelWatchEndpoint(serializedPayload(pushNotification))) return true;
-
-            Object renderer = pushClass.getField("c").get(pushNotification);
-            if (renderer == null) return false;
-            Object navigationEndpoint = renderer.getClass().getField("f").get(renderer);
-            if (navigationEndpoint == null) return false;
-
-            Object extensionStore = navigationEndpoint.getClass().getField("l").get(navigationEndpoint);
-            for (String extensionClassName : REEL_WATCH_ENDPOINT_EXTENSIONS) {
-                try {
-                    Object reelWatchEndpoint = Class.forName(extensionClassName).getField("b").get(null);
-                    Object descriptor = reelWatchEndpoint.getClass().getField("d").get(reelWatchEndpoint);
-
-                    for (Method method : extensionStore.getClass().getMethods()) {
-                        Class<?>[] parameters = method.getParameterTypes();
-                        if (method.getName().equals("n") && parameters.length == 1 && parameters[0].isInstance(descriptor)) {
-                            if (Boolean.TRUE.equals(method.invoke(extensionStore, descriptor))) return true;
-                        }
-                    }
-                } catch (ClassNotFoundException | NoSuchFieldException ignored) {
-                    // This generated extension may belong to the other supported YouTube schema.
-                } catch (ReflectiveOperationException | RuntimeException ex) {
-                    Logger.printException(() -> "Shorts push notification endpoint check failed open", ex);
-                    return false;
-                }
-            }
-            return false;
-        } catch (ReflectiveOperationException | RuntimeException ex) {
+            return isShortsNotification(((MessageLite) pushNotification).toByteArray());
+        } catch (RuntimeException ex) {
             Logger.printException(() -> "Shorts push notification detection failed open", ex);
             return false;
         }
+    }
+
+    static boolean isShortsNotification(byte[] serialized) {
+        List<ProtoNode> fields = ProtoNode.parse(serialized);
+        if (fields == null) return false;
+        for (ProtoNode field : fields) {
+            if (field.getFieldNumber() == PUSH_NOTIFICATION_RENDERER_FIELD
+                    && containsReelWatchEndpoint(field.children)) return true;
+        }
+        return false;
+    }
+
+    private static boolean containsReelWatchEndpoint(List<ProtoNode> fields) {
+        if (fields == null) return false;
+        for (ProtoNode field : fields) {
+            if (field.getFieldNumber() == REEL_WATCH_ENDPOINT_FIELD && field.children != null) return true;
+            if (containsReelWatchEndpoint(field.children)) return true;
+        }
+        return false;
     }
 }
