@@ -4,7 +4,7 @@ group = "app.morphe"
 
 patches {
     about {
-        name = "jlssmt"
+        name = "jlssmt Shorts Test"
         description = "Patches for Morphe"
         source = "git@github.com:MorpheApp/morphe-patches.git"
         author = "MorpheApp"
