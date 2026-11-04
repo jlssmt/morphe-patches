@@ -1,3 +1,63 @@
+## [2.2.7](https://github.com/jlssmt/morphe-patches/compare/v2.2.6...v2.2.7) (2026-11-03)
+
+### 🐛 Bug Fixes
+
+* **metadata:** set bundle name to jlssmt ([e5075d3](https://github.com/jlssmt/morphe-patches/commit/e5075d335f7302d07ce85683aaa809d33b733ec4))
+
+## [2.2.6](https://github.com/jlssmt/morphe-patches/compare/v2.2.5...v2.2.6) (2026-11-03)
+
+### 🐛 Bug Fixes
+
+* **youtube:** detect reel endpoints in serialized pushes ([e3713d5](https://github.com/jlssmt/morphe-patches/commit/e3713d5b980a58405a8c8794aded2d27a75fe949))
+
+## [2.2.5](https://github.com/jlssmt/morphe-patches/compare/v2.2.4...v2.2.5) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **youtube:** capture full serialized push payloads ([2fe3fe9](https://github.com/jlssmt/morphe-patches/commit/2fe3fe9be50236e60e39916dd687b81ad12154a4))
+
+## [2.2.4](https://github.com/jlssmt/morphe-patches/compare/v2.2.3...v2.2.4) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **youtube:** dump fields from opaque Shorts payloads ([20f2697](https://github.com/jlssmt/morphe-patches/commit/20f2697dec757fa0efe8fbce7b15d4f651d57aa5))
+
+## [2.2.3](https://github.com/jlssmt/morphe-patches/compare/v2.2.2...v2.2.3) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **release:** preserve bundle if release fails ([f70599c](https://github.com/jlssmt/morphe-patches/commit/f70599c65ee9d70577ba26748ff07549f90cebdc))
+
+## [2.2.2](https://github.com/jlssmt/morphe-patches/compare/v2.2.1...v2.2.2) (2026-11-01)
+
+### 🐛 Bug Fixes
+
+* **youtube:** dump opaque identity payload strings ([52e0e2e](https://github.com/jlssmt/morphe-patches/commit/52e0e2e333f44f8fdf57ab32de9ca6c7e66163bd))
+
+## [2.2.1](https://github.com/jlssmt/morphe-patches/compare/v2.2.0...v2.2.1) (2026-11-01)
+
+### 🐛 Bug Fixes
+
+* **youtube:** dump fields for opaque Shorts payloads ([b3d592f](https://github.com/jlssmt/morphe-patches/commit/b3d592f13862bb0b7c5da65242f8b6e6a514d228))
+
+## [2.2.0](https://github.com/jlssmt/morphe-patches/compare/v2.1.1...v2.2.0) (2026-10-31)
+
+### ✨ New Features
+
+* **youtube:** add persistent Shorts payload diagnostics ([bd5e27d](https://github.com/jlssmt/morphe-patches/commit/bd5e27df6683c4b6823cc82854e2af4c4cda5b08))
+
+## [2.1.1](https://github.com/jlssmt/morphe-patches/compare/v2.1.0...v2.1.1) (2026-10-31)
+
+### 🐛 Bug Fixes
+
+* **release:** sign fork patch bundles ([77a7343](https://github.com/jlssmt/morphe-patches/commit/77a7343e5010ae036fdd768d5c402e177bca918a))
+
+## [2.1.0](https://github.com/jlssmt/morphe-patches/compare/v2.0.0...v2.1.0) (2026-10-31)
+
+### ✨ New Features
+
+* **youtube:** add Shorts notification filtering ([3be6e72](https://github.com/jlssmt/morphe-patches/commit/3be6e72d40479692e6f43b98487e69a7f0d50afd))
+
 ## [2.0.0](https://github.com/MorpheApp/morphe-patches/compare/v1.48.0...v2.0.0) (2026-10-30)
 
 ### ⚠ BREAKING CHANGES

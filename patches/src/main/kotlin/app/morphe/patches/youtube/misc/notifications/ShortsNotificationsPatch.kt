@@ -8,6 +8,7 @@
 package app.morphe.patches.youtube.misc.notifications
 
 import app.morphe.patcher.Fingerprint
+import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
 import app.morphe.patcher.methodCall
 import app.morphe.patcher.patch.ApkFileType
@@ -22,10 +23,12 @@ import app.morphe.patches.youtube.misc.playservice.versionCheckPatch
 import app.morphe.patches.youtube.misc.settings.PreferenceScreen
 import app.morphe.patches.youtube.misc.settings.settingsPatch
 import app.morphe.patches.youtube.shared.Constants.COMPATIBILITY_YOUTUBE
+import app.morphe.patches.youtube.shared.YouTubeActivityOnCreateFingerprint
 
 private const val EXTENSION_CLASS =
     "Lapp/morphe/extension/youtube/patches/ShortsNotificationsPatch;"
 
+// The handler schema changed between these supported YouTube versions.
 private val shortsNotificationsCompatibility = Compatibility(
     packageName = "com.google.android.youtube",
     name = "YouTube",
@@ -77,6 +80,11 @@ val shortsNotificationsPatch = bytecodePatch(
             SwitchPreference("morphe_disable_shorts_notifications")
         )
 
+        YouTubeActivityOnCreateFingerprint.method.addInstruction(
+            0,
+            "invoke-static/range { p0 .. p0 }, $EXTENSION_CLASS->showHiddenShortsCountOnLaunch(Landroid/app/Activity;)V"
+        )
+
         val fingerprint = if (is_21_42_or_greater) {
             FcmMessageListenerFingerprint
         } else {
@@ -87,7 +95,7 @@ val shortsNotificationsPatch = bytecodePatch(
         notificationHandler.addInstructionsWithLabels(
             0,
             """
-                invoke-static { p2 }, $EXTENSION_CLASS->shouldSuppressShortsNotification(Ljava/lang/Object;)Z
+                invoke-static { p1, p2 }, $EXTENSION_CLASS->shouldSuppressShortsNotification(Landroid/content/Context;Ljava/lang/Object;)Z
                 move-result v$register
                 if-eqz v$register, :morphe_shorts_notifications_continue
                 return-void
