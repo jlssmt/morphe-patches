@@ -331,7 +331,7 @@ val hideShortsComponentsPatch = bytecodePatch(
         PushNotificationReceivedFingerprint.method.addInstructionsWithLabels(
             0,
             """
-                invoke-static { p2 }, $EXTENSION_FILTER->hideShortsNotification(Lcom/google/protobuf/MessageLite;)Z
+                invoke-static { p1, p2 }, $EXTENSION_FILTER->hideShortsNotification(Landroid/content/Context;Lcom/google/protobuf/MessageLite;)Z
                 move-result v0
                 if-eqz v0, :show
                 return-void
