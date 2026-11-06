@@ -38,6 +38,7 @@ import app.morphe.patches.youtube.misc.playservice.versionCheckPatch
 import app.morphe.patches.youtube.misc.settings.PreferenceScreen
 import app.morphe.patches.youtube.misc.settings.settingsPatch
 import app.morphe.patches.youtube.shared.Constants.COMPATIBILITY_YOUTUBE
+import app.morphe.patches.youtube.shared.YouTubeActivityOnCreateFingerprint
 import app.morphe.util.addInstructionsAtControlFlowLabel
 import app.morphe.util.findElementByAttributeValueOrThrow
 import app.morphe.util.indexOfFirstInstructionOrThrow
@@ -327,6 +328,11 @@ val hideShortsComponentsPatch = bytecodePatch(
         // endregion
 
         // region Hide Shorts push notifications.
+
+        YouTubeActivityOnCreateFingerprint.method.addInstruction(
+            0,
+            "invoke-static/range { p0 .. p0 }, $EXTENSION_FILTER->showHiddenShortsCountOnLaunch(Landroid/app/Activity;)V"
+        )
 
         PushNotificationReceivedFingerprint.method.addInstructionsWithLabels(
             0,

@@ -10,11 +10,13 @@
 
 package app.morphe.extension.youtube.patches.components;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -51,6 +53,7 @@ import app.morphe.extension.youtube.shared.ShortsPlayerState;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public final class ShortsFilter extends Filter {
+    private static final Object HIDDEN_COUNT_LOCK = new Object();
     private static final String COMPONENT_TYPE = "ComponentType";
     private static final boolean HIDE_SHORTS_NAVIGATION_BAR = Settings.HIDE_SHORTS_NAVIGATION_BAR.get();
     private final String REEL_CHANNEL_BAR_PATH = "reel_channel_bar.e";
@@ -826,10 +829,48 @@ public final class ShortsFilter extends Filter {
             ShortsNotificationPayloadCapture.capture(context, renderers, filterEnabled, isShorts);
         }
         if (filterEnabled && isShorts) {
-            Logger.printDebug(() -> "Hiding Shorts push notification");
+            int sinceLaunch;
+            int total;
+            synchronized (HIDDEN_COUNT_LOCK) {
+                sinceLaunch = increment(Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.get());
+                total = increment(Math.max(Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.get(), sinceLaunch - 1));
+                Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.save(sinceLaunch);
+                Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.save(total);
+            }
+            int hiddenSinceLaunch = sinceLaunch;
+            int hiddenTotal = total;
+            Logger.printDebug(() -> "Hiding Shorts push notification; since launch="
+                    + hiddenSinceLaunch + ", total=" + hiddenTotal);
             return true;
         }
         return false;
+    }
+
+    public static void showHiddenShortsCountOnLaunch(Activity activity) {
+        synchronized (HIDDEN_COUNT_LOCK) {
+            int sinceLaunch = Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.get();
+            int total = Math.max(Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.get(), sinceLaunch);
+            if (sinceLaunch <= 0 && !Settings.HIDE_SHORTS_NOTIFICATIONS.get()) return;
+
+            int stringId = activity.getResources().getIdentifier(
+                    "morphe_shorts_notifications_hidden_count_toast", "string", activity.getPackageName());
+            if (stringId == 0) {
+                Logger.printException(() -> "Shorts notification count toast string not found");
+                return;
+            }
+
+            try {
+                Toast.makeText(activity, activity.getResources().getString(stringId, sinceLaunch, total), Toast.LENGTH_LONG).show();
+                Settings.SHORTS_NOTIFICATIONS_HIDDEN_SINCE_LAUNCH.save(0);
+                Settings.SHORTS_NOTIFICATIONS_HIDDEN_TOTAL.save(total);
+            } catch (RuntimeException ex) {
+                Logger.printException(() -> "Could not show Shorts notification count", ex);
+            }
+        }
+    }
+
+    private static int increment(int value) {
+        return value < Integer.MAX_VALUE ? value + 1 : value;
     }
 
     /**
